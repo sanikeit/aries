@@ -1,0 +1,9 @@
+MANIFEST.in
+README.md
+package.json
+setup.py
+src/aries_edge_schemas.egg-info/PKG-INFO
+src/aries_edge_schemas.egg-info/SOURCES.txt
+src/aries_edge_schemas.egg-info/dependency_links.txt
+src/aries_edge_schemas.egg-info/requires.txt
+src/aries_edge_schemas.egg-info/top_level.txt

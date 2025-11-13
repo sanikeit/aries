@@ -1,0 +1,118 @@
+Metadata-Version: 2.1
+Name: aries-edge-schemas
+Version: 1.0.0
+Summary: Shared schemas for Aries-Edge Platform
+Author: Aries-Edge Team
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+
+# Aries-Edge Schemas
+
+Shared schema definitions for the Aries-Edge Platform. This package provides consistent data models across all services.
+
+## Installation
+
+```bash
+npm install @aries-edge/schemas
+```
+
+## Usage
+
+### TypeScript/JavaScript
+
+```typescript
+import { UserSchema, CameraSchema, DetectionSchema } from '@aries-edge/schemas';
+
+// Validate user data
+const userData = {
+  username: 'john_doe',
+  email: 'john@example.com',
+  full_name: 'John Doe',
+  role: 'operator',
+  status: 'active'
+};
+
+const validatedUser = UserSchema.parse(userData);
+```
+
+### Python
+
+```python
+from aries_edge_schemas import User, CreateUser, Camera
+
+# Create a new user
+new_user = CreateUser(
+    username="john_doe",
+    email="john@example.com", 
+    full_name="John Doe",
+    role="operator",
+    password="secure_password123"
+)
+
+# Validate camera data
+camera = Camera(
+    id="123e4567-e89b-12d3-a456-426614174000",
+    name="Front Door Camera",
+    type="ip",
+    url="rtsp://192.168.1.100:554/stream",
+    status="online",
+    is_active=True
+)
+```
+
+## Schema Types
+
+### User Management
+- `UserSchema` - Complete user model
+- `CreateUserSchema` - User creation
+- `UpdateUserSchema` - User updates
+- `LoginSchema` - Authentication
+- `TokenSchema` - JWT tokens
+- `ApiKeySchema` - API key management
+
+### Camera & Streaming
+- `CameraSchema` - Camera configuration
+- `StreamSchema` - Stream settings
+- `CreateCameraSchema` - Camera creation
+- `CreateStreamSchema` - Stream creation
+
+### Analytics & Detection
+- `DetectionSchema` - Object detection results
+- `AnalyticsEventSchema` - Analytics events
+- `BoundingBoxSchema` - Object bounding boxes
+- `DetectionClassSchema` - COCO detection classes
+
+### WebSocket Messages
+- `WsMessageSchema` - Base WebSocket message
+- `DetectionWsMessageSchema` - Detection messages
+- `AnalyticsWsMessageSchema` - Analytics messages
+
+### Configuration
+- `SystemConfigSchema` - System settings
+- `UpdateSystemConfigSchema` - Configuration updates
+
+## Validation
+
+All schemas include comprehensive validation:
+
+- UUID format validation
+- Email format validation
+- URL format validation  
+- Enum value validation
+- Numeric range validation
+- String length validation
+- Date/time format validation
+
+## Cross-Language Compatibility
+
+The schemas are designed to be compatible between TypeScript and Python implementations, ensuring consistent data validation across the entire stack.

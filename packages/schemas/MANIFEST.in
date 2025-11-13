@@ -1,0 +1,6 @@
+include LICENSE
+include README.md
+include package.json
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store

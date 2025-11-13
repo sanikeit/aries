@@ -1,0 +1,33 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "services/api",
+  "projectType": "application",
+  "tags": ["type:service", "scope:backend"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd services/api && docker build -t aries-api:latest ."
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd services/api && python -m app.main"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd services/api && black --check app/ && isort --check-only app/ && flake8 app/"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd services/api && pytest tests/ -v"
+      }
+    }
+  }
+}

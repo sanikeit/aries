@@ -1,0 +1,51 @@
+# DeepStream nvinfer config file for YOLOv8/v9 ONNX model
+# This configuration enables TensorRT optimization and custom C++ parsing
+
+[property]
+gpu-id=0
+net-scale-factor=0.0039215697906911373
+model-color-format=0
+
+# ONNX model configuration
+onnx-file=/opt/nvidia/deepstream/deepstream/models/yolov8s.onnx
+model-engine-file=/opt/nvidia/deepstream/deepstream/models/yolov8s.engine
+
+# Custom YOLO parser library
+# This is the compiled C++ library that parses YOLO output tensors
+custom-lib-path=/opt/nvidia/deepstream/deepstream/lib/libnvdsinfer_custom_impl_Yolo.so
+parse-bbox-func-name=NvDsInferParseYolo
+
+# Labels file
+labelfile-path=/opt/nvidia/deepstream/deepstream/models/labels.txt
+
+# Network configuration
+network-mode=2  # FP16 precision for optimal performance
+num-detected-classes=80
+interval=0
+gie-unique-id=1
+
+# Class attributes (for all 80 COCO classes)
+[class-attrs-all]
+pre-cluster-threshold=0.25
+group-threshold=1
+
+# Output layer configuration for YOLOv8
+output-blob-names=boxes;scores;classes
+
+# Input layer configuration
+input-object-min-width=10
+input-object-min-height=10
+
+# Batch processing
+batch-size=1
+workspace-size=1024
+
+# Optimization flags
+model-color-format=0
+network-type=0  # Detector
+maintain-aspect-ratio=0
+symmetric-padding=0
+
+# Clustering configuration
+dbscan-min-samples=0
+dbscan-eps=0.3

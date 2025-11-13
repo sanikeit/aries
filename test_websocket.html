@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <div id="status">Connecting...</div>
+    <div id="messages"></div>
+    
+    <script>
+        // Get token from localStorage (simulating the auth token)
+        const token = localStorage.getItem('token') || 'demo-token';
+        
+        const wsUrl = `ws://localhost:8000/ws?token=${token}`;
+        const statusDiv = document.getElementById('status');
+        const messagesDiv = document.getElementById('messages');
+        
+        function addMessage(message) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            messagesDiv.appendChild(p);
+        }
+        
+        try {
+            const ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function(event) {
+                statusDiv.textContent = 'Connected!';
+                statusDiv.style.color = 'green';
+                addMessage('WebSocket connected successfully');
+                
+                // Send a ping message
+                ws.send(JSON.stringify({ type: 'ping' }));
+            };
+            
+            ws.onmessage = function(event) {
+                addMessage('Received: ' + event.data);
+            };
+            
+            ws.onerror = function(error) {
+                statusDiv.textContent = 'Connection Error';
+                statusDiv.style.color = 'red';
+                addMessage('WebSocket error: ' + error);
+            };
+            
+            ws.onclose = function(event) {
+                statusDiv.textContent = 'Disconnected';
+                statusDiv.style.color = 'orange';
+                addMessage('WebSocket disconnected: ' + event.code + ' - ' + event.reason);
+            };
+            
+        } catch (error) {
+            statusDiv.textContent = 'Failed to create WebSocket';
+            statusDiv.style.color = 'red';
+            addMessage('Error: ' + error.message);
+        }
+    </script>
+</body>
+</html>

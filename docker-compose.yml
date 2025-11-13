@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  aries-api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: aries-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - aries-broker
+      - aries-db
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://aries:password@aries-db:5432/aries
+      - PULSAR_URL=pulsar://aries-broker:6650
+      - JWT_SECRET_KEY=your-secret-key-here
+      - JWT_ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    volumes:
+      - hls-data:/opt/aries/streams
+    networks:
+      - aries-network
+    restart: unless-stopped
+
+  aries-processor:
+    build:
+      context: ./services/processor
+      dockerfile: Dockerfile
+    container_name: aries-processor
+    runtime: nvidia
+    privileged: true
+    depends_on:
+      - aries-broker
+    environment:
+      - PULSAR_URL=pulsar://aries-broker:6650
+      - HLS_OUTPUT_DIR=/opt/aries/streams
+      - DEEPSTREAM_CONFIG_DIR=/opt/nvidia/deepstream/deepstream/configs
+    volumes:
+      - hls-data:/opt/aries/streams
+      - ./models:/opt/nvidia/deepstream/deepstream/models
+      - ./configs:/opt/nvidia/deepstream/deepstream/configs
+    networks:
+      - aries-network
+    restart: unless-stopped
+
+  aries-broker:
+    image: apachepulsar/pulsar:latest
+    container_name: aries-broker
+    ports:
+      - "6650:6650"     # Pulsar binary protocol
+      - "8080:8080"     # Pulsar admin interface
+      - "6651:6651"     # Pulsar TLS port
+    environment:
+      - PULSAR_MEM="-Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+      - PULSAR_PREFIX_zookeeperServers=aries-broker:2181
+      - PULSAR_PREFIX_configurationStoreServers=aries-broker:2181
+      - PULSAR_PREFIX_brokerServicePort=6650
+      - PULSAR_PREFIX_brokerServicePortTls=6651
+      - PULSAR_PREFIX_webServicePort=8080
+      - PULSAR_PREFIX_webServicePortTls=8443
+    command: >
+      bash -c "bin/pulsar standalone"
+    networks:
+      - aries-network
+    restart: unless-stopped
+
+  aries-db:
+    image: postgres:16
+    container_name: aries-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=aries
+      - POSTGRES_USER=aries
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - aries-network
+    restart: unless-stopped
+
+networks:
+  aries-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  hls-data:
+    driver: local
